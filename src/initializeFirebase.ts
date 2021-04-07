@@ -1,0 +1,19 @@
+import firebase from 'firebase/app';
+// Required for side-effects
+import "firebase/firestore";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAhJMmEqbS9bAKWr8UhMgRtsLux253oKPY",
+    authDomain: "workbook-f9da2.firebaseapp.com",
+    projectId: "workbook-f9da2",
+    storageBucket: "workbook-f9da2.appspot.com",
+    messagingSenderId: "932569571057",
+    appId: "1:932569571057:web:d14ba0d6164c0086169350"
+};
+
+// Initialize Cloud Firestore through Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Initialize Firebase
+export const db = firebase.firestore();
