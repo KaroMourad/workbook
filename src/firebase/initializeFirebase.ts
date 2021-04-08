@@ -1,6 +1,7 @@
-import firebase from 'firebase/app';
+import firebase from "firebase/app";
 // Required for side-effects
 import "firebase/firestore";
+import "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,4 +17,5 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Initialize Firebase
+export const auth = firebase.auth();
 export const db = firebase.firestore();

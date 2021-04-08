@@ -1,69 +1,93 @@
-import React, {useState} from "react";
+import React, {FC, useState} from "react";
 import "./login.css";
+import {ILoginProps} from "./ILogin";
+import ErrorFallback from "../../components/errorFallback/ErrorFallback";
+import {ErrorBoundary} from "../../components/errorBoundary/ErrorBoundary";
+import {auth} from "../../firebase/initializeFirebase";
 
-const Login = (): JSX.Element =>
+const Login: FC<ILoginProps> = (): JSX.Element =>
 {
-    const [username,setUsername] = useState<string>("");
-    const [password,setPassword] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [processing, setProcessing] = useState<boolean>(false);
 
     const handleSubmit = (event: React.SyntheticEvent): void =>
     {
         event.preventDefault();
-        // do login task TODO
 
-        // clear state to default values
-        setUsername("");
-        setPassword("");
-        console.log(username, password);
-    }
+        if (!processing)
+        {
+            setProcessing(true);
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) =>
+                {
+                    // Signed in
+                    // const {user} = userCredential;
+
+                    // clear state to default values
+                    setEmail("");
+                    setPassword("");
+                    setProcessing(false);
+                })
+                .catch((error) =>
+                {
+                    setProcessing(false);
+                    // const errorCode = error.code;
+                    // const errorMessage = error.message;
+                });
+        }
+    };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void =>
     {
-        const {target} = event;
+        const {name, value} = event.target;
 
-        if(target.name === "psw")
+        if (name === "password")
         {
-           setPassword(prevPassword => target.value.trim());
-        }
-        else if(target.name === "uname")
+            setPassword(prevPassword => value.trim());
+        } else if (name === "email")
         {
-            setUsername( prevUsername => target.value.trim());
+            setEmail(prevEmail => value.trim());
         }
-    }
+    };
 
     return (
-        <div className={"container"}>
-            <h2>Login Form</h2>
+        <ErrorBoundary fallback={<ErrorFallback/>}>
+            <div className={"container"}>
+                <h2>Login Form</h2>
 
-            <form onSubmit={handleSubmit}>
-                <div className="imgContainer">
-                    <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" className="avatar" />
-                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="imgContainer">
+                        <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" className="avatar"/>
+                    </div>
 
-                <div className="inputsContainer">
-                    <label htmlFor="uname"><b>Username</b></label>
-                    <input
-                        type="text"
-                        placeholder="Enter Username"
-                        name="uname"
-                        required
-                        value={username}
-                        onChange={handleChange}
-                    />
+                    <div className="inputsContainer">
+                        <label htmlFor="email"><b>Email</b></label>
+                        <input
+                            type="email"
+                            placeholder="Enter Email"
+                            name="email"
+                            required
+                            disabled={processing}
+                            value={email}
+                            onChange={handleChange}
+                        />
 
-                    <label htmlFor="psw"><b>Password</b></label>
-                    <input
-                        type="password"
-                        placeholder="Enter Password"
-                        name="psw"
-                        required
-                        value={password}
-                        onChange={handleChange}
-                    />
-                    <button type="submit">Login</button>
-                </div>
-            </form>
-        </div>
+                        <label htmlFor="password"><b>Password</b></label>
+                        <input
+                            type="password"
+                            placeholder="Enter Password"
+                            name="password"
+                            required
+                            disabled={processing}
+                            value={password}
+                            onChange={handleChange}
+                        />
+                        <button type="submit" disabled={processing}>Login</button>
+                    </div>
+                </form>
+            </div>
+        </ErrorBoundary>
     );
 };
 
