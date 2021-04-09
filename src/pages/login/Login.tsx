@@ -4,6 +4,7 @@ import {ILoginProps} from "./ILogin";
 import ErrorFallback from "../../components/errorFallback/ErrorFallback";
 import {ErrorBoundary} from "../../components/errorBoundary/ErrorBoundary";
 import {auth} from "../../firebase/initializeFirebase";
+import Button from "../../components/button/Button";
 
 const Login: FC<ILoginProps> = (): JSX.Element =>
 {
@@ -19,16 +20,6 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
         {
             setProcessing(true);
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) =>
-                {
-                    // Signed in
-                    // const {user} = userCredential;
-
-                    // clear state to default values
-                    setEmail("");
-                    setPassword("");
-                    setProcessing(false);
-                })
                 .catch((error) =>
                 {
                     setProcessing(false);
@@ -53,7 +44,7 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
 
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
-            <div className={"container"}>
+            <div className={"formContainer"}>
                 <h2>Login Form</h2>
 
                 <form onSubmit={handleSubmit}>
@@ -68,7 +59,6 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             placeholder="Enter Email"
                             name="email"
                             required
-                            disabled={processing}
                             value={email}
                             onChange={handleChange}
                         />
@@ -79,11 +69,12 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             placeholder="Enter Password"
                             name="password"
                             required
-                            disabled={processing}
                             value={password}
                             onChange={handleChange}
                         />
-                        <button type="submit" disabled={processing}>Login</button>
+                        <Button type="submit" processing={processing}>
+                            Login
+                        </Button>
                     </div>
                 </form>
             </div>

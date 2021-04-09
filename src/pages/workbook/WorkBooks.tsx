@@ -3,6 +3,7 @@ import ErrorFallback from "../../components/errorFallback/ErrorFallback";
 import {ErrorBoundary} from "../../components/errorBoundary/ErrorBoundary";
 import {IWorkBooksProps} from "./IWorkBooks";
 import {useRouteMatch} from "react-router-dom";
+import Logout from "../../components/logout/Logout";
 
 const WorkBooks: FC<IWorkBooksProps> = (props): JSX.Element =>
 {
@@ -18,6 +19,7 @@ const WorkBooks: FC<IWorkBooksProps> = (props): JSX.Element =>
 
             <div>
                 WorkBooks
+                <Logout/>
             </div>
         </ErrorBoundary>
     );

@@ -1,14 +1,18 @@
-.container {
+.formContainer {
     min-width: 320px;
     max-width: 420px;
     margin: 0 auto;
 }
 
-form {
+.formContainer > form {
     border: 3px solid #f1f1f1;
 }
 
-input[type=email], input[type=password] {
+.inputsContainer {
+    padding: 16px;
+}
+
+.inputsContainer > input[type=email], .inputsContainer > input[type=password] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -17,7 +21,7 @@ input[type=email], input[type=password] {
     box-sizing: border-box;
 }
 
-button {
+.inputsContainer > button {
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
@@ -27,14 +31,8 @@ button {
     width: 100%;
 }
 
-button:hover {
+.inputsContainer > button:hover {
     opacity: 0.8;
-}
-
-.cancelbtn {
-    width: auto;
-    padding: 10px 18px;
-    background-color: #f44336;
 }
 
 .imgContainer {
@@ -42,11 +40,9 @@ button:hover {
     margin: 24px 0 12px 0;
 }
 
-img.avatar {
+.imgContainer > img.avatar {
     width: 40%;
     border-radius: 50%;
 }
 
-.inputsContainer {
-    padding: 16px;
-}
+
