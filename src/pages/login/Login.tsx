@@ -9,7 +9,11 @@ import Button from "../../components/button/Button";
 const Login: FC<ILoginProps> = (): JSX.Element =>
 {
     const [email, setEmail] = useState<string>("");
+    const [validEmail, setValidEmail] = useState<boolean | undefined>();
+
     const [password, setPassword] = useState<string>("");
+    const [validPassword, setValidPassword] = useState<boolean | undefined>();
+
     const [processing, setProcessing] = useState<boolean>(false);
 
     const handleSubmit = (event: React.SyntheticEvent): void =>
@@ -29,16 +33,37 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
         }
     };
 
+    const validateEmail = (value: string): boolean =>
+    {
+        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(value))
+        {
+            return true;
+        }
+        return false;
+    };
+
+    const validatePassword = (value: string): boolean =>
+    {
+        if (value.length > 6)
+        {
+            return true;
+        }
+        return false;
+    };
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void =>
     {
         const {name, value} = event.target;
+        const trimmedValue = value.trim();
 
         if (name === "password")
         {
-            setPassword(prevPassword => value.trim());
+            setPassword(prevPassword => trimmedValue);
+            setValidPassword(prevValidPass => validatePassword(trimmedValue));
         } else if (name === "email")
         {
-            setEmail(prevEmail => value.trim());
+            setEmail(prevEmail => trimmedValue);
+            setValidEmail(prevValidEmail => validateEmail(trimmedValue));
         }
     };
 
@@ -59,9 +84,13 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             placeholder="Enter Email"
                             name="email"
                             required
+                            className={validEmail ? "valid" : "invalid"}
                             value={email}
                             onChange={handleChange}
                         />
+                        {validEmail || validEmail === undefined ? null : (
+                            <p style={{marginTop: 0}}>Please insert right email format!</p>
+                        )}
 
                         <label htmlFor="password"><b>Password</b></label>
                         <input
@@ -69,9 +98,14 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             placeholder="Enter Password"
                             name="password"
                             required
+                            className={validPassword ? "valid" : "invalid"}
                             value={password}
                             onChange={handleChange}
                         />
+                        {validPassword || validPassword === undefined ? null : (
+                            <p style={{marginTop: 0}}>Please insert 7 or bigger characters! ({password.length})</p>
+                        )}
+
                         <Button type="submit" processing={processing}>
                             Login
                         </Button>

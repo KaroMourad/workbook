@@ -4,10 +4,22 @@
     position: relative;
 }
 
-
-.processingBtn {
-    cursor: progress;
-    opacity: 0.7;
-    pointer-events: none;
+.valid {
+    color: green;
 }
 
+.valid:before {
+    position: relative;
+    left: -35px;
+    content: "&#10004;";
+}
+
+.invalid {
+    color: red;
+}
+
+.invalid:before {
+    position: relative;
+    left: -35px;
+    content: "&#10006;";
+}

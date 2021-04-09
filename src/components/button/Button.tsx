@@ -1,6 +1,7 @@
 import React from "react";
 import PulseLoader from "../pulseLoader/PulseLoader";
 import {IButtonProps} from "./IButton";
+import "./button.css";
 
 const Button = (props: IButtonProps): JSX.Element =>
 {
