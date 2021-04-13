@@ -1,15 +1,19 @@
 import React, {useContext} from "react";
 import "./App.css";
-import {BrowserRouter as Router, Redirect, Route, Switch,} from "react-router-dom";
-import Login from "./pages/login/Login";
+import {Redirect, Route, Switch,} from "react-router-dom";
 import "./firebase/initializeFirebase";
+import Login from "./pages/login/Login";
 import routes from "./routes/routes";
 import {ErrorBoundary} from "./components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "./components/errorFallback/ErrorFallback";
-import Loader from "./components/spinner/Loader";
+import Loader from "./components/loader/Loader";
 import {UserContext} from "./context/userContext/UserProvider";
+import ReactNotification from "react-notifications-component";
 
-function App(): JSX.Element
+import "react-notifications-component/dist/theme.css";
+import "react-datepicker/dist/react-datepicker.css";
+
+const App = (): JSX.Element =>
 {
     const userContext = useContext(UserContext);
     const {isLoaded, user} = userContext;
@@ -17,18 +21,17 @@ function App(): JSX.Element
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
             <div className="appContainer">
+                <ReactNotification />
                 {isLoaded ? (
                     <React.Suspense fallback={<Loader/>}>
-                        <Router>
-                            <Switch>
-                                {
-                                    user ? (
-                                        routes.map((route, i) => <Route {...route}/>)
-                                    ) : <Route exact path={"/login"} component={Login}/>
-                                }
-                                <Redirect to={user ? "/workbook" : "/login"}/>
-                            </Switch>
-                        </Router>
+                        <Switch>
+                            {
+                                user ? (
+                                    routes.map((route, i) => <Route {...route}/>)
+                                ) : <Route exact path={"/login"} component={Login}/>
+                            }
+                            <Redirect to={user ? routes[0].path : "/login"}/>
+                        </Switch>
                     </React.Suspense>
                 ) : <Loader/>}
             </div>

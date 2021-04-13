@@ -10,8 +10,8 @@
 
 .valid:before {
     position: relative;
-    left: -35px;
-    content: "&#10004;";
+    left: -5px;
+    content: "\2714";
 }
 
 .invalid {
@@ -20,6 +20,15 @@
 
 .invalid:before {
     position: relative;
-    left: -35px;
-    content: "&#10006;";
+    left: -5px;
+    content: "\2716";
+}
+
+a {
+    text-decoration: none;
+}
+
+.react-datepicker__day--outside-month {
+    visibility: hidden;
+    pointer-events: none;
 }

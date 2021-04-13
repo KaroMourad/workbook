@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import React, {MouseEvent, ReactNode} from "react";
 
 export interface IButtonProps
 {
@@ -7,5 +7,6 @@ export interface IButtonProps
     disabled?: boolean;
     className?: string;
     processing?: boolean;
-    onClick?: (e) => void;
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+    style?: React.CSSProperties;
 }

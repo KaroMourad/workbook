@@ -1,9 +1,13 @@
-import React, {useState} from "react";
+import React, {FC, useState} from "react";
 import {auth} from "../../firebase/initializeFirebase";
 import Button from "../button/Button";
+import {notify} from "../../services/notify/Notify";
+import {ILogoutProps} from "./ILogout";
+import "./logout.css";
 
-const Logout = (): JSX.Element =>
+const Logout: FC<ILogoutProps> = (props: ILogoutProps): JSX.Element =>
 {
+    const {style = {}} = props;
     const [processing, setProcessing] = useState<boolean>(false);
 
     const handleLogout = (): void =>
@@ -11,12 +15,19 @@ const Logout = (): JSX.Element =>
         if (!processing)
         {
             setProcessing(true);
-            auth.signOut().then(() => setProcessing(false));
+            auth.signOut()
+                .then(() => notify("User has been successfully signed out!", "success"))
+                .catch((error) => notify(error.message, "danger"))
         }
     };
 
     return (
-        <Button className={"logout"} processing={processing} onClick={handleLogout}>
+        <Button
+            className={"logout"}
+            style={style}
+            processing={processing}
+            onClick={handleLogout}
+        >
             Logout
         </Button>
     );

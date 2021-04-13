@@ -1,117 +1,97 @@
-import React, {FC, useState} from "react";
+import React, {FC, useCallback, useState} from "react";
 import "./login.css";
 import {ILoginProps} from "./ILogin";
 import ErrorFallback from "../../components/errorFallback/ErrorFallback";
 import {ErrorBoundary} from "../../components/errorBoundary/ErrorBoundary";
-import {auth} from "../../firebase/initializeFirebase";
 import Button from "../../components/button/Button";
+import {notify} from "../../services/notify/Notify";
+import {emailPattern, validateEmail, validatePassword} from "../../services/validation/Validations";
+import Input from "../../components/input/Input";
+import {auth} from "../../firebase/initializeFirebase";
 
-const Login: FC<ILoginProps> = (): JSX.Element =>
+const Login: FC<ILoginProps> = (props: ILoginProps): JSX.Element =>
 {
     const [email, setEmail] = useState<string>("");
-    const [validEmail, setValidEmail] = useState<boolean | undefined>();
-
     const [password, setPassword] = useState<string>("");
-    const [validPassword, setValidPassword] = useState<boolean | undefined>();
-
     const [processing, setProcessing] = useState<boolean>(false);
 
-    const handleSubmit = (event: React.SyntheticEvent): void =>
+    const handleLoginSubmit = useCallback((event: React.SyntheticEvent): void =>
     {
         event.preventDefault();
 
-        if (!processing)
+        if (!processing && email && password)
         {
             setProcessing(true);
             auth.signInWithEmailAndPassword(email, password)
-                .catch((error) =>
-                {
+                .catch((error) => {
                     setProcessing(false);
-                    // const errorCode = error.code;
-                    // const errorMessage = error.message;
-                });
+                    notify(error.message, "danger")
+                })
         }
-    };
+    },[email, password, processing]);
 
-    const validateEmail = (value: string): boolean =>
-    {
-        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(value))
-        {
-            return true;
-        }
-        return false;
-    };
-
-    const validatePassword = (value: string): boolean =>
-    {
-        if (value.length > 6)
-        {
-            return true;
-        }
-        return false;
-    };
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void =>
+    const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>): void =>
     {
         const {name, value} = event.target;
-        const trimmedValue = value.trim();
+        const trimmedValue: string = value.trim();
 
-        if (name === "password")
+        switch(name)
         {
-            setPassword(prevPassword => trimmedValue);
-            setValidPassword(prevValidPass => validatePassword(trimmedValue));
-        } else if (name === "email")
-        {
-            setEmail(prevEmail => trimmedValue);
-            setValidEmail(prevValidEmail => validateEmail(trimmedValue));
+            case "password":
+                setPassword(prevPassword => trimmedValue);
+                break;
+            case "email":
+                setEmail(prevEmail => trimmedValue);
+                break;
+            default:
         }
-    };
+    },[]);
 
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
-            <div className={"formContainer"}>
+            <section className={"formContainer"}>
                 <h2>Login Form</h2>
-
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleLoginSubmit} >
                     <div className="imgContainer">
                         <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" className="avatar"/>
                     </div>
-
-                    <div className="inputsContainer">
-                        <label htmlFor="email"><b>Email</b></label>
-                        <input
+                    <main className="inputsContainer">
+                        <Input
                             type="email"
-                            placeholder="Enter Email"
                             name="email"
+                            label={"Email"}
                             required
-                            className={validEmail ? "valid" : "invalid"}
                             value={email}
-                            onChange={handleChange}
+                            pattern={emailPattern}
+                            onChange={handleChangeInput}
+                            placeholder="Enter Email"
+                            withValidation
+                            isValid={validateEmail(email)}
+                            validationText={"Please insert right email format!"}
                         />
-                        {validEmail || validEmail === undefined ? null : (
-                            <p style={{marginTop: 0}}>Please insert right email format!</p>
-                        )}
-
-                        <label htmlFor="password"><b>Password</b></label>
-                        <input
+                        <Input
                             type="password"
-                            placeholder="Enter Password"
                             name="password"
+                            label={"Password"}
                             required
-                            className={validPassword ? "valid" : "invalid"}
                             value={password}
-                            onChange={handleChange}
+                            onChange={handleChangeInput}
+                            placeholder="Enter Password"
+                            withValidation
+                            isValid={validatePassword(password)}
+                            validationText={`Please insert 7 or bigger characters! (${password?.length || 0})`}
                         />
-                        {validPassword || validPassword === undefined ? null : (
-                            <p style={{marginTop: 0}}>Please insert 7 or bigger characters! ({password.length})</p>
-                        )}
-
-                        <Button type="submit" processing={processing}>
+                        <Button
+                            type="submit"
+                            className={"submitButton"}
+                            disabled={!validateEmail(email) || !validatePassword(password)}
+                            processing={processing}
+                        >
                             Login
                         </Button>
-                    </div>
+                    </main>
                 </form>
-            </div>
+            </section>
         </ErrorBoundary>
     );
 };

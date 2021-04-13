@@ -1,17 +1,20 @@
-import React from "react";
+import React, {FC} from "react";
 import PulseLoader from "../pulseLoader/PulseLoader";
 import {IButtonProps} from "./IButton";
 import "./button.css";
 
-const Button = (props: IButtonProps): JSX.Element =>
+const Button: FC<IButtonProps> = (props: IButtonProps): JSX.Element =>
 {
-    const {children = null, type = "button", disabled, className, processing, onClick} = props;
+    const {children = null, type = "button", disabled, className = "", processing, onClick, style = {}} = props;
+
+    const btnClassName:string = className + (processing ? " processingBtn" : "") + (disabled ? " disabled" : "");
     return (
         <button
             type={type}
-            onClick={onClick}
+            onClick={processing ? undefined : onClick}
             disabled={disabled}
-            className={className + (processing ? "processingBtn" : "")}
+            className={"button " + btnClassName}
+            style={style}
         >
             {children}
             {processing ? <PulseLoader/> : null}

@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {IErrorFallbackProps} from "./IErrorFallback";
 
-const ErrorFallback: FC<IErrorFallbackProps> = (): JSX.Element =>
+const ErrorFallback: FC<IErrorFallbackProps> = (props: IErrorFallbackProps): JSX.Element =>
 {
     return (
         <div role="alert">

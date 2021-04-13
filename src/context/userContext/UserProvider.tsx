@@ -1,29 +1,32 @@
-import React, {createContext, useEffect, useState} from "react";
-import {auth, db} from "../../firebase/initializeFirebase";
-import {IProviderProps, IUserContext} from "./IUserProvider";
+import React, {createContext, FC, useEffect, useState} from "react";
+import {auth} from "../../firebase/initializeFirebase";
+import {IProviderProps, IUser, IUserContext} from "./IUserProvider";
+import {notify} from "../../services/notify/Notify";
+import {getUserDoc} from "../../services/usersApi/userApi";
 
 export const UserContext = createContext<IUserContext>({user: null, isLoaded: false});
 
-const UserProvider = (props: IProviderProps): JSX.Element =>
+const UserProvider: FC<IProviderProps> = (props: IProviderProps): JSX.Element =>
 {
     const [user, setUser] = useState<IUserContext>({
         user: null,
         isLoaded: false
     });
 
-    const getUserDocument = async (uid?: string) =>
+    const getUserDocument = async (uid?: string): Promise<IUser | null> =>
     {
         if (!uid) return null;
         try
         {
-            const userDocument = await db.collection("users").doc(uid).get();
+            const userDocument = await getUserDoc(uid);
             return {
                 uid,
                 ...userDocument.data()
             };
         } catch (error)
         {
-            console.error("Error getting document:", error);
+            notify(error.message, "danger");
+            return null;
         }
     };
 
@@ -31,11 +34,18 @@ const UserProvider = (props: IProviderProps): JSX.Element =>
     {
         auth.onAuthStateChanged(async userAuth =>
         {
-            const user = await getUserDocument(userAuth?.uid);
-            setUser(prevUser => ({
-                user,
-                isLoaded: true
-            }));
+            try {
+                const user: IUser | null = await getUserDocument(userAuth?.uid);
+                if(user) {
+                    notify("User has successfully logged in!", "success");
+                }
+                setUser(prevUser => ({
+                    user,
+                    isLoaded: true
+                }));
+            } catch (error) {
+                notify(error.message, "danger");
+            }
         });
     }, []);
 

@@ -1,0 +1,43 @@
+.workPlaceCreateEditContainer {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    min-width: 420px;
+    min-height: 320px;
+}
+
+.workPlaceCreateEditContainer > .header {
+    white-space: nowrap;
+}
+
+.workPlaceCreateEditContainer > .footer {
+    white-space: nowrap;
+}
+
+.workPlaceCreateEditContent {
+    margin: 15px 0;
+    padding: 10px 0;
+    flex: 1;
+    overflow: hidden;
+    border-top: 1px solid #b9b9b9;
+    border-bottom: 1px solid #b9b9b9;
+}
+
+.workPlaceCreateEditContent > form {
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+    min-width: 420px;
+    justify-content: space-between;
+}
+
+.workPlaceCreateEditContent > form label {
+    display: block;
+}
+
+.dateRangeContainer {
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    margin-top: 10px;
+}

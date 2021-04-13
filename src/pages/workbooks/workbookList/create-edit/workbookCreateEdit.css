@@ -1,0 +1,42 @@
+.workBookCreateEditContainer {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    min-width: 420px;
+    min-height: 376px;
+}
+
+.workBookCreateEditContainer > .header {
+    white-space: nowrap;
+}
+
+.workBookCreateEditContainer > .footer {
+    white-space: nowrap;
+}
+
+.workBookCreateEditContent {
+    margin: 15px 0;
+    padding: 10px 0;
+    flex: 1;
+    overflow: hidden;
+    border-top: 1px solid #b9b9b9;
+    border-bottom: 1px solid #b9b9b9;
+}
+
+.workBookCreateEditContent > form {
+    display: flex;
+    padding: 0 15px;
+    min-width: 440px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.workBookCreateEditContent > form > div {
+    display: flex;
+    justify-content: space-between;
+    min-height: 106px;
+}
+
+.workBookCreateEditContent > form label {
+    display: block;
+}

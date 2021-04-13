@@ -1,0 +1,14 @@
+.workbooksContainer {
+    padding: 15px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.workbooksContainer > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
