@@ -2,7 +2,8 @@ export interface IWorkbooksProps
 {
 }
 
-export interface IWorkbook {
+export interface IWorkbook
+{
     firstname: string;
     lastname: string;
     email: string;

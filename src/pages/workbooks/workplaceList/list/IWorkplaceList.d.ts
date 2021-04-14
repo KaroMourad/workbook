@@ -2,7 +2,8 @@ export interface IWorkplaceListProps
 {
 }
 
-export interface IWorkplace {
+export interface IWorkplace
+{
     id?: string;
     created_at?: number;
     company: string;

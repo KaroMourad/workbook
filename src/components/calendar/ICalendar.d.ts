@@ -11,5 +11,5 @@ export interface ICalendarProps
     end?: Date | null;
     onChangeStartDate?: (date: Date | null) => void;
     onChangeEndDate?: (date: Date | null) => void;
-    disabledRangeDates?: {startDate: number; endDate: number | null}[];
+    disabledRangeDates?: { startDate: number; endDate: number | null }[];
 }

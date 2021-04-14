@@ -3,11 +3,11 @@ import {IWorkplaceCreateEditProps} from "./IWorkplaceCreateEdit";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
 import {IWorkplace} from "../list/IWorkplaceList";
-import {createWorkplace, getWorkplace, updateWorkplace} from "../../../../services/workplaceApi/workplaceApi";
+import {createWorkplace, getWorkplace, updateWorkplace} from "../../../../services/api/workplaceApi/workplaceApi";
 import {notify} from "../../../../services/notify/Notify";
 import Input from "../../../../components/input/Input";
 import Button from "../../../../components/button/Button";
-import {isEqual} from "lodash-es";
+import isEqual from "lodash-es/isEqual";
 import Loader from "../../../../components/loader/Loader";
 import CountrySelector from "../../../../components/countrySelector/CountrySelector";
 import "./workplaceCreateEdit.css";
@@ -39,7 +39,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         return usedDates.filter(date => date.id !== id);
     }, [usedDates, id]);
 
-    const getChangedProperties = (workplace: IWorkplace): Partial<IWorkplace> =>
+    const getChangedProperties = useCallback((workplace: IWorkplace): Partial<IWorkplace> =>
     {
         let obj: any = {};
 
@@ -55,7 +55,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
             }
         }
         return obj;
-    };
+    }, []);
 
     const handleChangeInput = useCallback((e: React.ChangeEvent<HTMLInputElement>): void =>
     {
@@ -103,6 +103,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         });
     }, []);
 
+    // function without memoization cause dependencies are too many
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>): void =>
     {
         setProcessingSave(true);
@@ -232,14 +233,18 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                     >
                         Cancel
                     </Button>
-                    <Button
-                        disabled={isEqual(initialData.current, workplace)}
-                        processing={processingSave}
-                        style={{minWidth: 85, marginLeft: 10}}
-                        onClick={handleSave}
-                    >
-                        Save
-                    </Button>
+                    {
+                        company.trim() && country && startDate ? (
+                            <Button
+                                disabled={isEqual(initialData.current, workplace)}
+                                processing={processingSave}
+                                style={{minWidth: 85, marginLeft: 10}}
+                                onClick={handleSave}
+                            >
+                                Save
+                            </Button>
+                        ) : null
+                    }
                 </footer>
             </div>
         </ErrorBoundary>

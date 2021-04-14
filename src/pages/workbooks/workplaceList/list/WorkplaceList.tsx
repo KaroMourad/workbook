@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
+import React, {FC, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
 import Loader from "../../../../components/loader/Loader";
@@ -8,14 +8,18 @@ import {IWorkplace, IWorkplaceListProps} from "./IWorkplaceList";
 import {Link, useParams} from "react-router-dom";
 import Modal from "../../../../components/modal/Modal";
 import {notify} from "../../../../services/notify/Notify";
-import {deleteWorkplaces, getWorkplaces} from "../../../../services/workplaceApi/workplaceApi";
+import {deleteWorkplaces, getWorkplaces} from "../../../../services/api/workplaceApi/workplaceApi";
 import WorkplaceCreateEdit from "../create-edit/WorkplaceCreateEdit";
 import DataTable from "react-data-table-component";
+import {UserContext} from "../../../../context/userContext/UserProvider";
 
 const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX.Element =>
 {
+    const {user} = useContext(UserContext);
+    const token: boolean = user?.super;
     const params = useParams<{ id: string }>();
     const workBookId: string = params.id;
+
     const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
     const [processing, setProcessing] = useState<boolean>(true);
     const [deleteProcessing, setDeleteProcessing] = useState<boolean>(false);
@@ -86,7 +90,7 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
         {
             try
             {
-                await deleteWorkplaces(ids);
+                await deleteWorkplaces(token, ids);
                 handleClearRows();
                 notify("Document successfully deleted!", "success");
                 getData();
@@ -98,13 +102,13 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
                 setDeleteProcessing(false);
             }
         })(ids);
-    }, [getData, handleClearRows]);
+    }, [getData, token, handleClearRows]);
 
     const columns = useMemo(() => [
         {
             name: "Created",
             selector: "created_at",
-            format: (row: any) => new Date(row.created_at).toDateString(),
+            format: (row: IWorkplace) => new Date(row.created_at as number).toDateString(),
             sortable: true
         },
         {
@@ -118,12 +122,12 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
         {
             name: "StartDate",
             selector: "startDate",
-            format: (row: any) => new Date(row.startDate).toDateString()
+            format: (row: IWorkplace) => new Date(row.startDate as number).toDateString()
         },
         {
             name: "EndDate",
             selector: "endDate",
-            format: (row: any) => new Date(row.endDate).toDateString(),
+            format: (row: IWorkplace) => row.endDate ? new Date(row.endDate).toDateString() : "--",
         }
     ], []);
 
@@ -141,28 +145,32 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
                     <>
                         <header>
                             <Link to={"/workbooks"}>{" < back "}</Link>
-                            <Button
-                                disabled={selectedWorkplaceIds.length > 0 || deleteProcessing}
-                                style={{minWidth: 85, marginLeft: "auto"}}
-                                onClick={() => setOpenCreateEditModal("create")}>
-                                Create
-                            </Button>
-                            <Button
-                                disabled={selectedWorkplaceIds.length !== 1 || deleteProcessing}
-                                style={{backgroundColor: "#4caaaf", marginLeft: 10}}
-                                onClick={() => setOpenCreateEditModal("edit")}>
-                                Edit
-                            </Button>
-                            <Button
-                                disabled={selectedWorkplaceIds.length === 0}
-                                processing={deleteProcessing}
-                                style={{backgroundColor: "black", marginLeft: 10}}
-                                onClick={(e) => handleDeleteWorkPlace(selectedWorkplaceIds)}>
-                                Delete
-                            </Button>
+                            {token ? (
+                                <>
+                                    <Button
+                                        disabled={selectedWorkplaceIds.length > 0 || deleteProcessing}
+                                        style={{minWidth: 85, marginLeft: "auto"}}
+                                        onClick={() => setOpenCreateEditModal("create")}>
+                                        Create
+                                    </Button>
+                                    <Button
+                                        disabled={selectedWorkplaceIds.length !== 1 || deleteProcessing}
+                                        style={{backgroundColor: "#4caaaf", marginLeft: 10}}
+                                        onClick={() => setOpenCreateEditModal("edit")}>
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        disabled={selectedWorkplaceIds.length === 0}
+                                        processing={deleteProcessing}
+                                        style={{backgroundColor: "black", marginLeft: 10}}
+                                        onClick={(e) => handleDeleteWorkPlace(selectedWorkplaceIds)}>
+                                        Delete
+                                    </Button>
+                                </>
+                            ) : null}
                         </header>
                         <Modal
-                            isOpen={!!openCreateEditModal}
+                            isOpen={token && !!openCreateEditModal}
                             onRequestClose={() => setOpenCreateEditModal(false)}
                             contentLabel={(openCreateEditModal === "create" ? "Create" : "Edit") + " Workplace"}
                         >

@@ -9,7 +9,7 @@ import {emailPattern, validateEmail, validatePassword} from "../../services/vali
 import Input from "../../components/input/Input";
 import {auth} from "../../firebase/initializeFirebase";
 
-const Login: FC<ILoginProps> = (props: ILoginProps): JSX.Element =>
+const Login: FC<ILoginProps> = (): JSX.Element =>
 {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");

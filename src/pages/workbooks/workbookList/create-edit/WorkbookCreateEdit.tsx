@@ -19,12 +19,12 @@ import {
     createWorkbook,
     getWorkbook,
     updateWorkbook
-} from "../../../../services/workbookApi/workbookApi";
+} from "../../../../services/api/workbookApi/workbookApi";
 import {notify} from "../../../../services/notify/Notify";
 import {IWorkbook} from "../../IWorkBooks";
 import Loader from "../../../../components/loader/Loader";
 import Input from "../../../../components/input/Input";
-import {isEqual} from "lodash-es";
+import isEqual from "lodash-es/isEqual";
 import Calendar from "../../../../components/calendar/Calendar";
 
 const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
@@ -62,7 +62,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
 
     const handleChangeDate = useCallback((date: Date | null): void =>
     {
-        if (date && date instanceof Date)
+        if (date)
         {
             setWorkbook(prevWorkbook =>
             {
@@ -74,6 +74,8 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
         }
     }, []);
 
+
+    // function without memoization cause dependencies are too many
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>): void =>
     {
         setProcessingSave(true);
@@ -98,7 +100,6 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
             })();
         } else if (id)
         {
-
             const getChangedProperties = (workbook: IWorkbook): Partial<IWorkbook> =>
             {
                 let obj: any = {};

@@ -5,9 +5,8 @@ import {notify} from "../../services/notify/Notify";
 import {ILogoutProps} from "./ILogout";
 import "./logout.css";
 
-const Logout: FC<ILogoutProps> = (props: ILogoutProps): JSX.Element =>
+const Logout: FC<ILogoutProps> = ({style = {}}): JSX.Element =>
 {
-    const {style = {}} = props;
     const [processing, setProcessing] = useState<boolean>(false);
 
     const handleLogout = (): void =>
@@ -17,7 +16,7 @@ const Logout: FC<ILogoutProps> = (props: ILogoutProps): JSX.Element =>
             setProcessing(true);
             auth.signOut()
                 .then(() => notify("User has been successfully signed out!", "success"))
-                .catch((error) => notify(error.message, "danger"))
+                .catch((error) => notify(error.message, "danger"));
         }
     };
 

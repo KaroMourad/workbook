@@ -22,7 +22,7 @@ const Calendar: FC<ICalendarProps> = ({
 
     useEffect(() =>
     {
-        if(range)
+        if (range)
         {
             setStartDate(start);
             setEndDate(end);
@@ -33,33 +33,43 @@ const Calendar: FC<ICalendarProps> = ({
     {
         const timestamp = date.valueOf();
 
-        for( let dates of disabledRangeDates)
+        for (let dates of disabledRangeDates)
         {
-            if(timestamp > dates.startDate)
+            if (timestamp > dates.startDate)
             {
-                if(dates.endDate)
+                if (dates.endDate)
                 {
                     if (timestamp < dates.endDate) return false;
-                }
-                else {
+                } else
+                {
                     if (timestamp > Date.now()) return false;
                 }
             }
         }
+
+        if (startDate && !endDate)
+        {
+            //startDate
+        }
+
+        if (endDate && !startDate)
+        {
+
+        }
         return true;
-    },[disabledRangeDates])
+    }, [disabledRangeDates, startDate, endDate]);
 
     const onChangeStart = useCallback((date: Date | null): void =>
     {
         onChangeStartDate?.(date);
-        if(endDate && date && date > endDate)
+        if (endDate && date && date > endDate)
         {
             setEndDate(null);
             onChangeEndDate?.(null);
         }
-    },[endDate, onChangeStartDate, onChangeEndDate]);
+    }, [endDate, onChangeStartDate, onChangeEndDate]);
 
-    if(range)
+    if (range)
     {
         return (
             <>
@@ -86,8 +96,8 @@ const Calendar: FC<ICalendarProps> = ({
                 />
             </>
         );
-    }
-    else {
+    } else
+    {
         return (
             <DatePicker
                 className={className}

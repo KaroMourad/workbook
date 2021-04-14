@@ -21,7 +21,7 @@ const App = (): JSX.Element =>
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
             <div className="appContainer">
-                <ReactNotification />
+                <ReactNotification/>
                 {isLoaded ? (
                     <React.Suspense fallback={<Loader/>}>
                         <Switch>
@@ -37,6 +37,6 @@ const App = (): JSX.Element =>
             </div>
         </ErrorBoundary>
     );
-}
+};
 
 export default App;

@@ -7,7 +7,7 @@ const Button: FC<IButtonProps> = (props: IButtonProps): JSX.Element =>
 {
     const {children = null, type = "button", disabled, className = "", processing, onClick, style = {}} = props;
 
-    const btnClassName:string = className + (processing ? " processingBtn" : "") + (disabled ? " disabled" : "");
+    const btnClassName: string = className + (processing ? " processingBtn" : "") + (disabled ? " disabled" : "");
     return (
         <button
             type={type}

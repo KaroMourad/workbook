@@ -2,10 +2,24 @@ import React, {FC} from "react";
 import {IInputProps} from "./IInput";
 import "./input.css";
 
-const Input: FC<IInputProps> = (props: IInputProps): JSX.Element =>
+const Input: FC<IInputProps> = ({
+    value,
+    onChange,
+    name,
+    placeholder,
+    type = "text",
+    isValid = false,
+    validationText,
+    style = {},
+    labelStyle = {},
+    validationStyle = {},
+    containerStyle = {},
+    label,
+    required,
+    pattern,
+    withValidation = false
+}): JSX.Element =>
 {
-    const {value, onChange, name, placeholder, type = "text", isValid = false, validationText, style = {}, labelStyle = {},
-        validationStyle = {},containerStyle = {}, label, required, pattern , withValidation = false} = props;
     return (
         <div style={containerStyle}>
             {label && <label htmlFor={name} style={labelStyle}><b>{label}</b></label>}
@@ -28,6 +42,6 @@ const Input: FC<IInputProps> = (props: IInputProps): JSX.Element =>
             ) : null}
         </div>
     );
-}
+};
 
 export default Input;

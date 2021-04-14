@@ -1,10 +1,10 @@
-import React, {useMemo, FC, useEffect, useCallback} from 'react'
-import countryList from 'react-select-country-list'
+import React, {FC, useCallback, useEffect, useMemo} from "react";
+import countryList from "react-select-country-list";
 import {ICountrySelectorProps} from "./ICountrySelector";
 import Select from "../select/Select";
 
 const CountrySelector: FC<ICountrySelectorProps> = ({
-    country= "",
+    country = "",
     onChange,
     label,
     style = {},
@@ -18,23 +18,23 @@ const CountrySelector: FC<ICountrySelectorProps> = ({
         const {value} = e.target;
 
         onChange(value);
-    },[onChange]);
+    }, [onChange]);
 
     useEffect(() =>
     {
-        if(!country)
+        if (!country)
         {
             onChange(options[0].label);
         }
-    },[country, options, onChange])
+    }, [country, options, onChange]);
 
     return (
         <div>
             {label && <label htmlFor={"select"} style={labelStyle}><b>{label}</b></label>}
-            <Select options={options} style={style} value={country} onChange={handleChange} />
+            <Select options={options} style={style} value={country} onChange={handleChange}/>
         </div>
 
     );
-}
+};
 
-export default CountrySelector
+export default CountrySelector;

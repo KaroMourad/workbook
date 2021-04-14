@@ -1,3 +1,3 @@
-export interface IWorkbookListProps {
-
+export interface IWorkbookListProps
+{
 }

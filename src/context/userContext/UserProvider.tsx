@@ -2,11 +2,11 @@ import React, {createContext, FC, useEffect, useState} from "react";
 import {auth} from "../../firebase/initializeFirebase";
 import {IProviderProps, IUser, IUserContext} from "./IUserProvider";
 import {notify} from "../../services/notify/Notify";
-import {getUserDoc} from "../../services/usersApi/userApi";
+import {getUserDoc} from "../../services/api/usersApi/userApi";
 
 export const UserContext = createContext<IUserContext>({user: null, isLoaded: false});
 
-const UserProvider: FC<IProviderProps> = (props: IProviderProps): JSX.Element =>
+const UserProvider: FC<IProviderProps> = ({children}): JSX.Element =>
 {
     const [user, setUser] = useState<IUserContext>({
         user: null,
@@ -34,16 +34,19 @@ const UserProvider: FC<IProviderProps> = (props: IProviderProps): JSX.Element =>
     {
         auth.onAuthStateChanged(async userAuth =>
         {
-            try {
+            try
+            {
                 const user: IUser | null = await getUserDocument(userAuth?.uid);
-                if(user) {
+                if (user)
+                {
                     notify("User has successfully logged in!", "success");
                 }
                 setUser(prevUser => ({
                     user,
                     isLoaded: true
                 }));
-            } catch (error) {
+            } catch (error)
+            {
                 notify(error.message, "danger");
             }
         });
@@ -51,7 +54,7 @@ const UserProvider: FC<IProviderProps> = (props: IProviderProps): JSX.Element =>
 
     return (
         <UserContext.Provider value={user}>
-            {props.children}
+            {children}
         </UserContext.Provider>
     );
 

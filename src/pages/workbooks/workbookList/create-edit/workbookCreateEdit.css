@@ -2,7 +2,8 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    min-width: 420px;
+    min-width: 320px;
+    max-width: 400px;
     min-height: 376px;
 }
 
@@ -26,7 +27,6 @@
 .workBookCreateEditContent > form {
     display: flex;
     padding: 0 15px;
-    min-width: 440px;
     flex-direction: column;
     justify-content: space-between;
 }
