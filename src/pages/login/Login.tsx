@@ -23,19 +23,20 @@ const Login: FC<ILoginProps> = (props: ILoginProps): JSX.Element =>
         {
             setProcessing(true);
             auth.signInWithEmailAndPassword(email, password)
-                .catch((error) => {
+                .catch((error) =>
+                {
                     setProcessing(false);
-                    notify(error.message, "danger")
-                })
+                    notify(error.message, "danger");
+                });
         }
-    },[email, password, processing]);
+    }, [email, password, processing]);
 
     const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>): void =>
     {
         const {name, value} = event.target;
         const trimmedValue: string = value.trim();
 
-        switch(name)
+        switch (name)
         {
             case "password":
                 setPassword(prevPassword => trimmedValue);
@@ -45,13 +46,13 @@ const Login: FC<ILoginProps> = (props: ILoginProps): JSX.Element =>
                 break;
             default:
         }
-    },[]);
+    }, []);
 
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
             <section className={"formContainer"}>
                 <h2>Login Form</h2>
-                <form onSubmit={handleLoginSubmit} >
+                <form onSubmit={handleLoginSubmit}>
                     <div className="imgContainer">
                         <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" className="avatar"/>
                     </div>

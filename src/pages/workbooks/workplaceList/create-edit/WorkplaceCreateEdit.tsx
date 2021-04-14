@@ -14,13 +14,13 @@ import "./workplaceCreateEdit.css";
 import Calendar from "../../../../components/calendar/Calendar";
 
 const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
-    isCreate,
-    id,
-    workBookId,
-    usedDates,
-    close,
-    getData
-}): JSX.Element =>
+                                                                isCreate,
+                                                                id,
+                                                                workBookId,
+                                                                usedDates,
+                                                                close,
+                                                                getData
+                                                            }): JSX.Element =>
 {
     const initialData = React.useRef<IWorkplace | null>(isCreate ? {
         company: "",
@@ -61,79 +61,89 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
     {
         const {value, name} = e.target;
 
-        setWorkplace(prevWorkplace => {
+        setWorkplace(prevWorkplace =>
+        {
             return {
                 ...prevWorkplace,
                 [name]: value
-            } as IWorkplace
-        })
-    },[]);
+            } as IWorkplace;
+        });
+    }, []);
 
     const handleChangeStartDate = useCallback((date: Date | null): void =>
     {
-        setWorkplace(prevWorkplace => {
+        setWorkplace(prevWorkplace =>
+        {
             return {
                 ...prevWorkplace,
                 startDate: date?.valueOf() || null
-            } as IWorkplace
-        })
-    },[]);
+            } as IWorkplace;
+        });
+    }, []);
 
     const handleChangeEndDate = useCallback((date: Date | null): void =>
     {
-        setWorkplace(prevWorkplace => {
+        setWorkplace(prevWorkplace =>
+        {
             return {
                 ...prevWorkplace,
                 endDate: date?.valueOf() || null
-            } as IWorkplace
-        })
-    },[]);
+            } as IWorkplace;
+        });
+    }, []);
 
     const handleChangeCountry = useCallback((value: string): void =>
     {
-        setWorkplace(prevWorkplace => {
+        setWorkplace(prevWorkplace =>
+        {
             return {
                 ...prevWorkplace,
                 country: value.trim()
-            } as IWorkplace
-        })
-    },[]);
+            } as IWorkplace;
+        });
+    }, []);
 
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>): void =>
     {
         setProcessingSave(true);
-        if(isCreate)
+        if (isCreate)
         {
-            (async () => {
-                try {
+            (async () =>
+            {
+                try
+                {
                     await createWorkplace({...workplace as IWorkplace, created_at: Date.now()});
                     setProcessingSave(false);
                     notify("Workplace has been successfully created!", "success");
                     getData();
                     close();
-                }catch (error) {
+                } catch (error)
+                {
                     setProcessingSave(false);
-                    notify(error.message, "danger")
+                    notify(error.message, "danger");
                 }
-            })()
-        }
-        else {
+            })();
+        } else
+        {
             if (id)
             {
                 const changedObj: Partial<IWorkplace> = getChangedProperties(workplace as IWorkplace);
 
-                (async () => {
-                    try {
+                (async () =>
+                {
+                    try
+                    {
                         await updateWorkplace(id, changedObj);
                         setProcessingSave(false);
                         notify("Document successfully updated!", "success");
                         getData();
                         close();
-                    }catch (error) {
+                    } catch (error)
+                    {
                         setProcessingSave(false);
-                        notify(error.message, "danger")
+                        notify(error.message, "danger");
                     }
-                })()
+                })();
             }
         }
     };
@@ -145,11 +155,12 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         if (isCreate)
         {
             setWorkplace(prevWorkplace => initialData.current);
-        }
-        else if (id)
+        } else if (id)
         {
-            (async (workplaceId) => {
-                try {
+            (async (workplaceId) =>
+            {
+                try
+                {
                     const doc = await getWorkplace(workplaceId);
                     if (doc.exists)
                     {
@@ -161,16 +172,17 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                         // doc.data() will be undefined in this case
                         notify("No such document!", "danger");
                     }
-                }catch (error) {
-                    notify(error.message, "danger")
+                } catch (error)
+                {
+                    notify(error.message, "danger");
                 }
-            })(id)
+            })(id);
         }
     }, [isCreate, id]);
 
     const {company = "", country, endDate = null, startDate = null} = workplace || {};
     return (
-        <ErrorBoundary fallback={<ErrorFallback />}>
+        <ErrorBoundary fallback={<ErrorFallback/>}>
             <div className={"workPlaceCreateEditContainer"}>
                 <header>
                     <h2>{(isCreate ? "Create" : "Update") + " Workplace"}</h2>
@@ -195,7 +207,9 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                                 />
                             </form>
                             <div className={"dateRangeContainer"}>
-                                <label style={{marginRight: 20}} htmlFor={"birthdate"}><b>Birthdate (18+)</b></label>
+                                <label style={{marginRight: 20}} htmlFor={"birthdate"}>
+                                    <b>Range</b>
+                                </label>
                                 <Calendar
                                     range={true}
                                     disabledRangeDates={disabledDates}
@@ -208,7 +222,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                                 />
                             </div>
                         </>
-                    ) : <Loader />}
+                    ) : <Loader/>}
                 </div>
                 <footer>
                     <Button

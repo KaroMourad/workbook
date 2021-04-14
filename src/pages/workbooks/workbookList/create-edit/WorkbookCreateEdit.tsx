@@ -3,8 +3,14 @@ import {IWorkbookCreateEditProps} from "./IWorkbookCreateEdit";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
 import {
-    alphanumericPattern, emailPattern, minBirthDate, onlyLettersPattern, validateBirthdate,
-    validateEmail, validateOnlyLetters, validatePassport,
+    alphanumericPattern,
+    emailPattern,
+    minBirthDate,
+    onlyLettersPattern,
+    validateBirthdate,
+    validateEmail,
+    validateOnlyLetters,
+    validatePassport,
 } from "../../../../services/validation/Validations";
 import "./workbookCreateEdit.css";
 import Button from "../../../../components/button/Button";
@@ -22,18 +28,18 @@ import {isEqual} from "lodash-es";
 import Calendar from "../../../../components/calendar/Calendar";
 
 const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
-    isCreate,
-    id,
-    close,
-    getData
-}): JSX.Element =>
+                                                              isCreate,
+                                                              id,
+                                                              close,
+                                                              getData
+                                                          }): JSX.Element =>
 {
     const initialData = React.useRef<IWorkbook | null>(isCreate ? {
         firstname: "",
         lastname: "",
         email: "",
         passport: "",
-        birthdate: Date.now()
+        birthdate: 0
     } : null);
 
     const [workbook, setWorkbook] = useState<IWorkbook | null>(null);
@@ -45,48 +51,53 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
     {
         const {value, name} = e.target;
 
-        setWorkbook(prevWorkbook => {
+        setWorkbook(prevWorkbook =>
+        {
             return {
                 ...prevWorkbook,
                 [name]: value.trim()
-            } as IWorkbook
-        })
-    },[]);
+            } as IWorkbook;
+        });
+    }, []);
 
     const handleChangeDate = useCallback((date: Date | null): void =>
     {
         if (date && date instanceof Date)
         {
-            setWorkbook(prevWorkbook => {
+            setWorkbook(prevWorkbook =>
+            {
                 return {
                     ...prevWorkbook,
                     birthdate: date?.valueOf() || Date.now
-                } as IWorkbook
-            })
+                } as IWorkbook;
+            });
         }
-    },[]);
+    }, []);
 
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>): void =>
     {
         setProcessingSave(true);
         const {passport = "", email = ""} = workbook || {};
-        if(isCreate)
+        if (isCreate)
         {
-            (async () => {
-                try {
+            (async () =>
+            {
+                try
+                {
                     await checkUniqueness({passport, email});
                     await createWorkbook({...workbook as IWorkbook, created_at: Date.now()});
                     setProcessingSave(false);
                     notify("Workbook has created successfully!", "success");
                     getData();
                     close();
-                }catch (error) {
+                } catch (error)
+                {
                     setProcessingSave(false);
-                    notify(error.message, "danger")
+                    notify(error.message, "danger");
                 }
-            })()
-        }
-        else if(id) {
+            })();
+        } else if (id)
+        {
 
             const getChangedProperties = (workbook: IWorkbook): Partial<IWorkbook> =>
             {
@@ -107,13 +118,15 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
             };
             const changedObj: Partial<IWorkbook> = getChangedProperties(workbook as IWorkbook);
 
-            (async () => {
-                try {
-                    if(changedObj.email)
+            (async () =>
+            {
+                try
+                {
+                    if (changedObj.email)
                     {
                         await checkUniqueness({email});
                     }
-                    if(changedObj.passport)
+                    if (changedObj.passport)
                     {
                         await checkUniqueness({passport});
                     }
@@ -122,11 +135,12 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                     notify("Document successfully updated!", "success");
                     getData();
                     close();
-                }catch (error) {
+                } catch (error)
+                {
                     setProcessingSave(false);
-                    notify(error.message, "danger")
+                    notify(error.message, "danger");
                 }
-            })()
+            })();
         }
     };
 
@@ -137,11 +151,12 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
         if (isCreate)
         {
             setWorkbook(prevWorkbook => initialData.current);
-        }
-        else if (id)
+        } else if (id)
         {
-            (async (workbookId) => {
-                try {
+            (async (workbookId) =>
+            {
+                try
+                {
                     const doc = await getWorkbook(workbookId);
                     if (doc.exists)
                     {
@@ -153,19 +168,27 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                         // doc.data() will be undefined in this case
                         notify("No such document!", "danger");
                     }
-                }catch (error) {
-                    notify(error.message, "danger")
+                } catch (error)
+                {
+                    notify(error.message, "danger");
                 }
-            })(id)
+            })(id);
         }
     }, [isCreate, id]);
 
-    const {firstname = "",lastname = "",email = "",passport = "", birthdate = Date.now()} = workbook || {};
+    const {
+        firstname = "",
+        lastname = "",
+        email = "",
+        passport = "",
+        birthdate = minBirthDate.valueOf()
+    } = workbook || {};
+
     return (
-        <ErrorBoundary fallback={<ErrorFallback />}>
+        <ErrorBoundary fallback={<ErrorFallback/>}>
             <div className={"workBookCreateEditContainer"}>
                 <header>
-                    <h2>{isCreate ? "Create Workbook": "Update Workbook"}</h2>
+                    <h2>{isCreate ? "Create Workbook" : "Update Workbook"}</h2>
                 </header>
                 <div className={"workBookCreateEditContent"}>
                     {workbook ? (
@@ -242,14 +265,13 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                     range={false}
                                     className={"inputStyle"}
                                     htmlForName={"birthdate"}
-                                    maxDate={new Date()}
-                                    minDate={minBirthDate}
+                                    maxDate={minBirthDate}
                                     selected={new Date(birthdate)}
                                     onChange={handleChangeDate}
                                 />
                             </div>
                         </>
-                    ) : <Loader />}
+                    ) : <Loader/>}
                 </div>
                 <footer>
                     <Button
@@ -262,15 +284,15 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                     {(
                         validateOnlyLetters(firstname) && validateOnlyLetters(lastname) && validateEmail(email) &&
                         validatePassport(passport) && validateBirthdate(new Date(birthdate))) ? (
-                            <Button
-                                disabled={isEqual(initialData.current, workbook)}
-                                processing={processingSave}
-                                style={{minWidth: 85, marginLeft: 10}}
-                                onClick={handleSave}
-                            >
-                                Save
-                            </Button>
-                        ) : null
+                        <Button
+                            disabled={isEqual(initialData.current, workbook)}
+                            processing={processingSave}
+                            style={{minWidth: 85, marginLeft: 10}}
+                            onClick={handleSave}
+                        >
+                            Save
+                        </Button>
+                    ) : null
                     }
                 </footer>
             </div>
