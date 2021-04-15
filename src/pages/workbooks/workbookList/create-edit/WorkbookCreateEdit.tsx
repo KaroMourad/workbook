@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useState} from "react";
+import React, {FC, useCallback, useEffect, useRef, useState} from "react";
 import {IWorkbookCreateEditProps} from "./IWorkbookCreateEdit";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
@@ -28,13 +28,13 @@ import isEqual from "lodash-es/isEqual";
 import Calendar from "../../../../components/calendar/Calendar";
 
 const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
-                                                              isCreate,
-                                                              id,
-                                                              close,
-                                                              getData
-                                                          }): JSX.Element =>
+    isCreate,
+    id,
+    close,
+    getData
+}): JSX.Element =>
 {
-    const initialData = React.useRef<IWorkbook | null>(isCreate ? {
+    const initialData = useRef<IWorkbook | null>(isCreate ? {
         firstname: "",
         lastname: "",
         email: "",
@@ -73,7 +73,6 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
             });
         }
     }, []);
-
 
     // function without memoization cause dependencies are too many
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>): void =>
@@ -146,7 +145,6 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
     };
 
     // side effects
-
     useEffect(() =>
     {
         if (isCreate)
@@ -185,6 +183,11 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
         birthdate = minBirthDate.valueOf()
     } = workbook || {};
 
+    const validFirstname: boolean = validateOnlyLetters(firstname);
+    const validLastname: boolean = validateOnlyLetters(lastname);
+    const validEmail: boolean = validateEmail(email);
+    const validPassport: boolean = validatePassport(passport);
+    const validBirthDate: boolean = validateBirthdate(new Date(birthdate));
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
             <div className={"workBookCreateEditContainer"}>
@@ -207,7 +210,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                         placeholder="Enter Firstname"
                                         containerStyle={{flex: 1}}
                                         withValidation
-                                        isValid={validateOnlyLetters(firstname)}
+                                        isValid={validFirstname}
                                         validationText={"Please insert only letters!"}
                                     />
                                     <Input
@@ -221,7 +224,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                         placeholder="Enter Lastname"
                                         containerStyle={{flex: 1, marginLeft: 20}}
                                         withValidation
-                                        isValid={validateOnlyLetters(lastname)}
+                                        isValid={validLastname}
                                         validationText={"Please insert only letters!"}
                                     />
                                 </div>
@@ -237,7 +240,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                         placeholder="Enter Email"
                                         containerStyle={{flex: 1}}
                                         withValidation
-                                        isValid={validateEmail(email)}
+                                        isValid={validEmail}
                                         validationText={"Please insert right email format!"}
                                     />
                                     <Input
@@ -251,7 +254,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                         placeholder="Enter Passport"
                                         containerStyle={{flex: 1, marginLeft: 20}}
                                         withValidation
-                                        isValid={validatePassport(passport)}
+                                        isValid={validPassport}
                                         validationText={"Please insert alphanumeric format!"}
                                     />
                                 </div>
@@ -261,7 +264,9 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                 alignItems: "center",
                                 padding: "0 15px"
                             }}>
-                                <label style={{marginRight: 20}} htmlFor={"birthdate"}><b>Birthdate (18+)</b></label>
+                                <label style={{marginRight: 20}} htmlFor={"birthdate"}>
+                                    <b>Birthdate (18+)</b>
+                                </label>
                                 <Calendar
                                     range={false}
                                     className={"inputStyle"}
@@ -270,6 +275,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                                     selected={new Date(birthdate)}
                                     onChange={handleChangeDate}
                                 />
+                                {validBirthDate ? null : <p>Adult only! 18+</p>}
                             </div>
                         </>
                     ) : <Loader/>}
@@ -282,9 +288,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                     >
                         Cancel
                     </Button>
-                    {(
-                        validateOnlyLetters(firstname) && validateOnlyLetters(lastname) && validateEmail(email) &&
-                        validatePassport(passport) && validateBirthdate(new Date(birthdate))) ? (
+                    {validFirstname && validLastname && validEmail && validPassport && validBirthDate ? (
                         <Button
                             disabled={isEqual(initialData.current, workbook)}
                             processing={processingSave}
@@ -293,8 +297,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
                         >
                             Save
                         </Button>
-                    ) : null
-                    }
+                    ) : null}
                 </footer>
             </div>
         </ErrorBoundary>

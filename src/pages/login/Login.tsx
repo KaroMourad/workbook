@@ -8,6 +8,7 @@ import {notify} from "../../services/notify/Notify";
 import {emailPattern, validateEmail, validatePassword} from "../../services/validation/Validations";
 import Input from "../../components/input/Input";
 import {auth} from "../../firebase/initializeFirebase";
+import Avatar from "../../images/img_avatar.png";
 
 const Login: FC<ILoginProps> = (): JSX.Element =>
 {
@@ -54,7 +55,7 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                 <h2>Login Form</h2>
                 <form onSubmit={handleLoginSubmit}>
                     <div className="imgContainer">
-                        <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" className="avatar"/>
+                        <img src={Avatar} alt="Avatar" className="avatar"/>
                     </div>
                     <main className="inputsContainer">
                         <Input

@@ -37,7 +37,8 @@
 
 .dateRangeContainer {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
     padding: 0 15px;
     margin-top: 10px;
 }

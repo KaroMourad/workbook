@@ -1,6 +1,9 @@
-import React, {FC, useCallback, useEffect, useState} from "react";
+import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import DatePicker from "react-datepicker";
 import {ICalendarProps} from "./ICalendar";
+import "./calendar.css";
+import {notify} from "../../services/notify/Notify";
+import {validateRange} from "../../services/validation/Validations";
 
 const Calendar: FC<ICalendarProps> = ({
   range,
@@ -20,6 +23,10 @@ const Calendar: FC<ICalendarProps> = ({
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
 
+    const sortedDisabledDates = useMemo( () => {
+        return disabledRangeDates.sort((a, b) => a.startDate - b.startDate)
+    }, [disabledRangeDates]);
+
     useEffect(() =>
     {
         if (range)
@@ -29,11 +36,12 @@ const Calendar: FC<ICalendarProps> = ({
         }
     }, [start, end, range]);
 
+    debugger;
     const filterDate = useCallback((date: Date): boolean =>
     {
         const timestamp = date.valueOf();
 
-        for (let dates of disabledRangeDates)
+        for (let dates of sortedDisabledDates)
         {
             if (timestamp > dates.startDate)
             {
@@ -46,18 +54,8 @@ const Calendar: FC<ICalendarProps> = ({
                 }
             }
         }
-
-        if (startDate && !endDate)
-        {
-            //startDate
-        }
-
-        if (endDate && !startDate)
-        {
-
-        }
         return true;
-    }, [disabledRangeDates, startDate, endDate]);
+    }, [sortedDisabledDates]);
 
     const onChangeStart = useCallback((date: Date | null): void =>
     {
@@ -69,10 +67,28 @@ const Calendar: FC<ICalendarProps> = ({
         }
     }, [endDate, onChangeStartDate, onChangeEndDate]);
 
+    const onChangeEnd = useCallback((date: Date | null): void =>
+    {
+        if (startDate && date)
+        {
+            const validEndDate: boolean = validateRange(sortedDisabledDates, startDate.valueOf(), date.valueOf());
+            if(validEndDate)
+            {
+                setEndDate(date);
+                onChangeEndDate?.(date);
+            }
+            else {
+                notify("Range cannot include another date range!","danger");
+                setEndDate(null);
+                onChangeEndDate?.(null);
+            }
+        }
+    },[startDate, onChangeEndDate, sortedDisabledDates]);
+
     if (range)
     {
         return (
-            <>
+            <div style={{display: "flex"}}>
                 <DatePicker
                     className={className}
                     name={htmlForName}
@@ -82,19 +98,21 @@ const Calendar: FC<ICalendarProps> = ({
                     startDate={startDate}
                     endDate={endDate}
                     filterDate={filterDate}
+                    popperPlacement={"top-start"}
                 />
                 <DatePicker
                     className={className}
                     name={htmlForName}
                     selected={endDate}
-                    onChange={(date) => onChangeEndDate?.(date as Date || null)}
+                    onChange={(date) => onChangeEnd(date as Date || null)}
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
                     minDate={startDate}
                     filterDate={filterDate}
+                    popperPlacement={"top-end"}
                 />
-            </>
+            </div>
         );
     } else
     {
@@ -106,6 +124,7 @@ const Calendar: FC<ICalendarProps> = ({
                 minDate={minDate}
                 selected={selected}
                 onChange={(date) => onChange?.(date as Date || null)}
+                popperPlacement={"bottom-end"}
             />
         );
     }

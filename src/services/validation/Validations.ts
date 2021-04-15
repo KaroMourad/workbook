@@ -31,3 +31,14 @@ export const validateBirthdate = (value: Date): boolean =>
     return value < minBirthDate;
 };
 
+export const validateRange = (disabledDates: {startDate: number; endDate: number | null}[], startDate: number, endDate: number ): boolean =>
+{
+    for(let date of disabledDates)
+    {
+        if(startDate < date.startDate && date.endDate && endDate >= date.endDate)
+        {
+            return false;
+        }
+    }
+    return true;
+};
