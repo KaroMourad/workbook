@@ -50,11 +50,11 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 There are two admins in application.
 To get logged in as a regualar admin, please use
 
-**email: "admin@gmail.com"**
-**password: "adminadmin"**
+**email: "admin@gmail.com"**\
+**password: "adminadmin"**\
 
 To get logged in as a super admin, please use 
 
-**email: "superadmin@gmail.com"**
-**password: "superadminsuperadmin"**
+**email: "superadmin@gmail.com"**\
+**password: "superadminsuperadmin"**\
 
