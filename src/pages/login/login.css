@@ -2,14 +2,14 @@
     min-width: 320px;
     max-width: 420px;
     position: absolute;
-    top: 45%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .formContainer > form {
     border: 3px solid #f1f1f1;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .inputsContainer {

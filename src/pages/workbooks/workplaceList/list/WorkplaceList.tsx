@@ -1,12 +1,12 @@
 import React, {FC, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
-import Loader from "../../../../components/loader/Loader";
-import Button from "../../../../components/button/Button";
+import Loader from "../../../../components/styled-tags/loader/Loader";
+import Button from "../../../../components/styled-tags/button/Button";
 import "./workplaceList.css";
 import {IWorkplace, IWorkplaceListProps} from "./IWorkplaceList";
 import {Link, useParams} from "react-router-dom";
-import Modal from "../../../../components/modal/Modal";
+import Modal from "../../../../components/styled-tags/modal/Modal";
 import {notify} from "../../../../services/notify/Notify";
 import {deleteWorkplaces, getWorkplaces} from "../../../../services/api/workplaceApi/workplaceApi";
 import WorkplaceCreateEdit from "../create-edit/WorkplaceCreateEdit";
@@ -31,9 +31,17 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
 
     // memoization hooks
 
+    // Toggle the state so React Table changes to `clearSelectedRows` are triggered
+    const handleClearRows = useCallback((): void =>
+    {
+        setSelectedWorkplaceIds([]);
+        setToggledClearRows(prevState => !prevState);
+    }, []);
+
     const getData = useCallback((): void =>
     {
         setProcessing(true);
+        handleClearRows();
         (async () =>
         {
             try
@@ -46,7 +54,6 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
                 {
                     // doc.data() is never undefined for query doc snapshots
                     const docData = doc.data() as IWorkplace;
-                    debugger;
                     data.push({
                         id: doc.id,
                         ...docData
@@ -67,14 +74,7 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
                 setProcessing(false);
             }
         })();
-    }, [workBookId]);
-
-    // Toggle the state so React Table changes to `clearSelectedRows` are triggered
-    const handleClearRows = useCallback((): void =>
-    {
-        setSelectedWorkplaceIds([]);
-        setToggledClearRows(prevState => !prevState);
-    }, []);
+    }, [workBookId, handleClearRows]);
 
     const handleChangeSelectedRows = useCallback((state: {
         allSelected: boolean;
@@ -108,9 +108,32 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
 
     const columns = useMemo((): IDataTableColumn<IWorkplace>[] => [
         {
-            name: "Created",
-            selector: "created_at",
-            format: (row: IWorkplace) => new Date(row.created_at as number).toLocaleDateString(),
+            name: "StartDate",
+            selector: "startDate",
+            format: (row: IWorkplace) =>
+            {
+                let date: Date = new Date(row.startDate as number);
+                let hours: string = ("0" + date.getHours()).slice(-2);
+                let seconds: string = ("0" + date.getSeconds()).slice(-2);
+                return date.toLocaleDateString() + ` ${hours}:${seconds}`;
+            },
+            sortable: true
+        },
+        {
+            name: "EndDate",
+            selector: "endDate",
+            format: (row: IWorkplace) =>
+            {
+                let date: Date | null = null;
+                if (row.endDate)
+                {
+                    date = new Date(row.endDate as number);
+                    let hours: string = ("0" + date.getHours()).slice(-2);
+                    let seconds: string = ("0" + date.getSeconds()).slice(-2);
+                    return date.toLocaleDateString() + ` ${hours}:${seconds}`;
+                }
+                return "--";
+            },
             sortable: true
         },
         {
@@ -120,16 +143,6 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
         {
             name: "Country",
             selector: "country",
-        },
-        {
-            name: "StartDate",
-            selector: "startDate",
-            format: (row: IWorkplace) => new Date(row.startDate as number).toLocaleDateString()
-        },
-        {
-            name: "EndDate",
-            selector: "endDate",
-            format: (row: IWorkplace) => row.endDate ? new Date(row.endDate).toLocaleDateString() : "--",
         }
     ], []);
 
@@ -199,8 +212,8 @@ const WorkplaceList: FC<IWorkplaceListProps> = (props: IWorkplaceListProps): JSX
                                 style={{height: "100%", overflowY: "auto"}}
                                 selectableRowsHighlight
                                 highlightOnHover
-                                defaultSortField="created_at"
-                                selectableRows
+                                defaultSortField="startDate"
+                                selectableRows={!!token}
                                 onSelectedRowsChange={handleChangeSelectedRows}
                                 clearSelectedRows={toggledClearRows}
                             />

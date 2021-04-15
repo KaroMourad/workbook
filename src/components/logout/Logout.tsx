@@ -1,6 +1,6 @@
 import React, {FC, useState} from "react";
 import {auth} from "../../firebase/initializeFirebase";
-import Button from "../button/Button";
+import Button from "../styled-tags/button/Button";
 import {notify} from "../../services/notify/Notify";
 import {ILogoutProps} from "./ILogout";
 import "./logout.css";

@@ -11,7 +11,7 @@ export const validateOnlyLetters = (value: string, pattern?: string): boolean =>
     return RegExp(pattern || onlyLettersPattern).test(String(value));
 };
 
-export const validatePassport = (value: string, pattern?: string): boolean =>
+export const validateAlphanumeric = (value: string, pattern?: string): boolean =>
 {
     return RegExp(pattern || alphanumericPattern).test(String(value));
 };
@@ -31,12 +31,15 @@ export const validateBirthdate = (value: Date): boolean =>
     return value < minBirthDate;
 };
 
-export const validateRange = (disabledDates: {startDate: number; endDate: number | null}[], startDate: number, endDate: number ): boolean =>
+export const validateStartDate = (startDate: Date | null, endDate: Date | null): boolean =>
 {
-    for(let date of disabledDates)
+    return !!endDate && !!startDate && startDate < endDate;
+};
+
+export const validateRange = (disabledDates: { startDate: number; endDate: number | null }[], startDate: number, endDate: number): boolean => {
+    for (let date of disabledDates)
     {
-        if(startDate < date.startDate && date.endDate && endDate >= date.endDate)
-        {
+        if (startDate <= date.startDate && date.endDate && endDate >= date.endDate) {
             return false;
         }
     }

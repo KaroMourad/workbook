@@ -6,12 +6,12 @@ import Login from "./pages/login/Login";
 import routes from "./routes/routes";
 import {ErrorBoundary} from "./components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "./components/errorFallback/ErrorFallback";
-import Loader from "./components/loader/Loader";
 import {UserContext} from "./context/userContext/UserProvider";
 import ReactNotification from "react-notifications-component";
 
 import "react-notifications-component/dist/theme.css";
 import "react-datepicker/dist/react-datepicker.css";
+import Loader from "./components/styled-tags/loader/Loader";
 
 const App = (): JSX.Element =>
 {

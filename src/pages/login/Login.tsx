@@ -3,12 +3,12 @@ import "./login.css";
 import {ILoginProps} from "./ILogin";
 import ErrorFallback from "../../components/errorFallback/ErrorFallback";
 import {ErrorBoundary} from "../../components/errorBoundary/ErrorBoundary";
-import Button from "../../components/button/Button";
 import {notify} from "../../services/notify/Notify";
 import {emailPattern, validateEmail, validatePassword} from "../../services/validation/Validations";
-import Input from "../../components/input/Input";
 import {auth} from "../../firebase/initializeFirebase";
 import Avatar from "../../images/img_avatar.png";
+import Input from "../../components/styled-tags/input/Input";
+import Button from "../../components/styled-tags/button/Button";
 
 const Login: FC<ILoginProps> = (): JSX.Element =>
 {
@@ -49,6 +49,8 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
         }
     }, []);
 
+    const validEmail: boolean = validateEmail(email);
+    const validPassword: boolean = validatePassword(password);
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
             <section className={"formContainer"}>
@@ -68,7 +70,7 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             onChange={handleChangeInput}
                             placeholder="Enter Email"
                             withValidation
-                            isValid={validateEmail(email)}
+                            isValid={validEmail}
                             validationText={"Please insert right email format!"}
                         />
                         <Input
@@ -80,13 +82,13 @@ const Login: FC<ILoginProps> = (): JSX.Element =>
                             onChange={handleChangeInput}
                             placeholder="Enter Password"
                             withValidation
-                            isValid={validatePassword(password)}
+                            isValid={validPassword}
                             validationText={`Please insert 7 or bigger characters! (${password?.length || 0})`}
                         />
                         <Button
                             type="submit"
                             className={"submitButton"}
-                            disabled={!validateEmail(email) || !validatePassword(password)}
+                            disabled={!validEmail || !validPassword}
                             processing={processing}
                         >
                             Login

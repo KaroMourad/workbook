@@ -1,7 +1,7 @@
 import React, {FC, useCallback, useEffect, useMemo} from "react";
 import countryList from "react-select-country-list";
 import {ICountrySelectorProps} from "./ICountrySelector";
-import Select from "../select/Select";
+import Select from "../styled-tags/select/Select";
 
 const CountrySelector: FC<ICountrySelectorProps> = ({
     country = "",

@@ -10,10 +10,10 @@ import {
     validateBirthdate,
     validateEmail,
     validateOnlyLetters,
-    validatePassport,
+    validateAlphanumeric,
 } from "../../../../services/validation/Validations";
 import "./workbookCreateEdit.css";
-import Button from "../../../../components/button/Button";
+import Button from "../../../../components/styled-tags/button/Button";
 import {
     checkUniqueness,
     createWorkbook,
@@ -22,10 +22,10 @@ import {
 } from "../../../../services/api/workbookApi/workbookApi";
 import {notify} from "../../../../services/notify/Notify";
 import {IWorkbook} from "../../IWorkBooks";
-import Loader from "../../../../components/loader/Loader";
-import Input from "../../../../components/input/Input";
+import Loader from "../../../../components/styled-tags/loader/Loader";
+import Input from "../../../../components/styled-tags/input/Input";
 import isEqual from "lodash-es/isEqual";
-import Calendar from "../../../../components/calendar/Calendar";
+import Calendar from "../../../../components/styled-tags/calendar/Calendar";
 
 const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
     isCreate,
@@ -186,7 +186,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
     const validFirstname: boolean = validateOnlyLetters(firstname);
     const validLastname: boolean = validateOnlyLetters(lastname);
     const validEmail: boolean = validateEmail(email);
-    const validPassport: boolean = validatePassport(passport);
+    const validPassport: boolean = validateAlphanumeric(passport);
     const validBirthDate: boolean = validateBirthdate(new Date(birthdate));
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>

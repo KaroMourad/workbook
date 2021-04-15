@@ -5,11 +5,11 @@ import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
 import {deleteWorkbooks, getWorkbooks,} from "../../../../services/api/workbookApi/workbookApi";
 import {notify} from "../../../../services/notify/Notify";
 import "./workbookList.css";
-import Loader from "../../../../components/loader/Loader";
-import Button from "../../../../components/button/Button";
+import Loader from "../../../../components/styled-tags/loader/Loader";
+import Button from "../../../../components/styled-tags/button/Button";
 import {useHistory, useLocation} from "react-router-dom";
 import {IWorkbook} from "../../IWorkBooks";
-import Modal from "../../../../components/modal/Modal";
+import Modal from "../../../../components/styled-tags/modal/Modal";
 import WorkbookCreateEdit from "../create-edit/WorkbookCreateEdit";
 import DataTable, {IDataTableColumn} from "react-data-table-component";
 import {UserContext} from "../../../../context/userContext/UserProvider";
@@ -104,13 +104,19 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
         {
             history.push(`${location.pathname}/${row.id}`);
         }
-    }
+    };
 
-    const columns = useMemo((): IDataTableColumn<IWorkbook>[]  => [
+    const columns = useMemo((): IDataTableColumn<IWorkbook>[] => [
         {
             name: "Created",
             selector: "created_at",
-            format: (row: IWorkbook) => new Date(row.created_at as number).toLocaleDateString(),
+            format: (row: IWorkbook) =>
+            {
+                let date: Date = new Date(row.created_at as number);
+                let hours: string = ("0" + date.getHours()).slice(-2);
+                let seconds: string = ("0" + date.getSeconds()).slice(-2);
+                return date.toLocaleDateString() + ` ${hours}:${seconds}`;
+            },
             sortable: true
         },
         {
@@ -199,7 +205,7 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
                                 selectableRowsHighlight
                                 highlightOnHover
                                 defaultSortField="created_at"
-                                selectableRows
+                                selectableRows={!!token}
                                 onSelectedRowsChange={handleChangeSelectedRows}
                                 clearSelectedRows={toggledClearRows}
                             />

@@ -2,8 +2,8 @@ import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import DatePicker from "react-datepicker";
 import {ICalendarProps} from "./ICalendar";
 import "./calendar.css";
-import {notify} from "../../services/notify/Notify";
-import {validateRange} from "../../services/validation/Validations";
+import {notify} from "../../../services/notify/Notify";
+import {validateRange, validateStartDate} from "../../../services/validation/Validations";
 
 const Calendar: FC<ICalendarProps> = ({
   range,
@@ -23,10 +23,6 @@ const Calendar: FC<ICalendarProps> = ({
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
 
-    const sortedDisabledDates = useMemo( () => {
-        return disabledRangeDates.sort((a, b) => a.startDate - b.startDate)
-    }, [disabledRangeDates]);
-
     useEffect(() =>
     {
         if (range)
@@ -36,14 +32,18 @@ const Calendar: FC<ICalendarProps> = ({
         }
     }, [start, end, range]);
 
-    debugger;
+    const sortedDisabledDates = useMemo(() =>
+    {
+        return disabledRangeDates.sort((a, b) => a.startDate - b.startDate);
+    }, [disabledRangeDates]);
+
     const filterDate = useCallback((date: Date): boolean =>
     {
         const timestamp = date.valueOf();
 
         for (let dates of sortedDisabledDates)
         {
-            if (timestamp > dates.startDate)
+            if (timestamp >= dates.startDate)
             {
                 if (dates.endDate)
                 {
@@ -57,33 +57,50 @@ const Calendar: FC<ICalendarProps> = ({
         return true;
     }, [sortedDisabledDates]);
 
-    const onChangeStart = useCallback((date: Date | null): void =>
+    const onChangeStart = useCallback((date: Date | null, end: Date | null): void =>
     {
+        setStartDate(date);
         onChangeStartDate?.(date);
-        if (endDate && date && date > endDate)
+
+        if (!validateStartDate(date, end))
         {
             setEndDate(null);
             onChangeEndDate?.(null);
         }
-    }, [endDate, onChangeStartDate, onChangeEndDate]);
-
-    const onChangeEnd = useCallback((date: Date | null): void =>
-    {
-        if (startDate && date)
+        if (end && date)
         {
-            const validEndDate: boolean = validateRange(sortedDisabledDates, startDate.valueOf(), date.valueOf());
-            if(validEndDate)
+            const validRange: boolean = validateRange(sortedDisabledDates, date.valueOf(), end.valueOf());
+            if (validRange)
             {
-                setEndDate(date);
-                onChangeEndDate?.(date);
+                onChangeStartDate?.(date);
+            } else
+            {
+                notify("Range cannot include another date range!", "danger");
+                setStartDate(null);
+                onChangeStartDate?.(null);
             }
-            else {
-                notify("Range cannot include another date range!","danger");
+        }
+    }, [sortedDisabledDates, onChangeStartDate, onChangeEndDate]);
+
+    const onChangeEnd = useCallback((date: Date | null, start: Date | null): void =>
+    {
+        setEndDate(date);
+        onChangeEndDate?.(date);
+
+        if (start && date)
+        {
+            const validRange: boolean = validateRange(sortedDisabledDates, start.valueOf(), date.valueOf());
+            if (validRange)
+            {
+                onChangeEndDate?.(date);
+            } else
+            {
+                notify("Range cannot include another date range!", "danger");
                 setEndDate(null);
                 onChangeEndDate?.(null);
             }
         }
-    },[startDate, onChangeEndDate, sortedDisabledDates]);
+    }, [onChangeEndDate, sortedDisabledDates]);
 
     if (range)
     {
@@ -93,10 +110,11 @@ const Calendar: FC<ICalendarProps> = ({
                     className={className}
                     name={htmlForName}
                     selected={startDate}
-                    onChange={(date) => onChangeStart(date as Date || null)}
+                    onChange={(date: Date | null) => onChangeStart(date ? new Date(date.setHours(0, 0, 0, 0)) : null, endDate)}
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
+                    maxDate={new Date()}
                     filterDate={filterDate}
                     popperPlacement={"top-start"}
                 />
@@ -104,11 +122,12 @@ const Calendar: FC<ICalendarProps> = ({
                     className={className}
                     name={htmlForName}
                     selected={endDate}
-                    onChange={(date) => onChangeEnd(date as Date || null)}
+                    onChange={(date: Date | null) => onChangeEnd(date ? new Date(date.setHours(23, 59, 59, 999)) : null, startDate)}
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
                     minDate={startDate}
+                    maxDate={new Date()}
                     filterDate={filterDate}
                     popperPlacement={"top-end"}
                 />

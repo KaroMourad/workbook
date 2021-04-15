@@ -1,17 +1,17 @@
-import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
+import React, {FC, useCallback, useEffect, useState} from "react";
 import {IWorkplaceCreateEditProps} from "./IWorkplaceCreateEdit";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
 import {IWorkplace} from "../list/IWorkplaceList";
 import {createWorkplace, getWorkplace, updateWorkplace} from "../../../../services/api/workplaceApi/workplaceApi";
 import {notify} from "../../../../services/notify/Notify";
-import Input from "../../../../components/input/Input";
-import Button from "../../../../components/button/Button";
+import Input from "../../../../components/styled-tags/input/Input";
+import Button from "../../../../components/styled-tags/button/Button";
 import isEqual from "lodash-es/isEqual";
-import Loader from "../../../../components/loader/Loader";
+import Loader from "../../../../components/styled-tags/loader/Loader";
 import CountrySelector from "../../../../components/countrySelector/CountrySelector";
 import "./workplaceCreateEdit.css";
-import Calendar from "../../../../components/calendar/Calendar";
+import Calendar from "../../../../components/styled-tags/calendar/Calendar";
 
 const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
     isCreate,
@@ -33,11 +33,6 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
     const [processingSave, setProcessingSave] = useState<boolean>(false);
 
     // memoization hooks
-
-    const disabledDates = useMemo((): IWorkplaceCreateEditProps["usedDates"] =>
-    {
-        return usedDates.filter(date => date.id !== id);
-    }, [usedDates, id]);
 
     const handleChangeInput = useCallback((e: React.ChangeEvent<HTMLInputElement>): void =>
     {
@@ -177,8 +172,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
             })(id);
         }
     }, [isCreate, id]);
-    debugger;
-    console.log("disabledDates",disabledDates)
+
     const {company = "", country, endDate = null, startDate = null} = workplace || {};
     return (
         <ErrorBoundary fallback={<ErrorFallback/>}>
@@ -211,7 +205,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                                 </label>
                                 <Calendar
                                     range={true}
-                                    disabledRangeDates={disabledDates}
+                                    disabledRangeDates={usedDates.filter(date => date.id !== id)}
                                     className={"inputStyle"}
                                     htmlForName={"rangePicker"}
                                     start={startDate ? new Date(startDate) : null}
