@@ -44,3 +44,17 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## To Login
+
+There are two admins in application.
+To get logged in as a regualar admin, please use
+
+**email: "admin@gmail.com"**
+**password: "adminadmin"**
+
+To get logged in as a super admin, please use 
+
+**email: "superadmin@gmail.com"**
+**password: "superadminsuperadmin"**
+
