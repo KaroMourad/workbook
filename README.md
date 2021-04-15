@@ -51,10 +51,10 @@ There are two admins in application.
 To get logged in as a regualar admin, please use
 
 **email: "admin@gmail.com"**\
-**password: "adminadmin"**\
+**password: "adminadmin"**
 
 To get logged in as a super admin, please use 
 
 **email: "superadmin@gmail.com"**\
-**password: "superadminsuperadmin"**\
+**password: "superadminsuperadmin"**
 
