@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
+import React, {FC, useCallback, useEffect, useState} from "react";
 import {IWorkplaceCreateEditProps} from "./IWorkplaceCreateEdit";
 import {ErrorBoundary} from "../../../../components/errorBoundary/ErrorBoundary";
 import ErrorFallback from "../../../../components/errorFallback/ErrorFallback";
@@ -14,13 +14,13 @@ import "./workplaceCreateEdit.css";
 import Calendar from "../../../../components/calendar/Calendar";
 
 const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
-                                                                isCreate,
-                                                                id,
-                                                                workBookId,
-                                                                usedDates,
-                                                                close,
-                                                                getData
-                                                            }): JSX.Element =>
+    isCreate,
+    id,
+    workBookId,
+    usedDates,
+    close,
+    getData
+}): JSX.Element =>
 {
     const initialData = React.useRef<IWorkplace | null>(isCreate ? {
         company: "",
@@ -34,33 +34,9 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
 
     // memoization hooks
 
-    const disabledDates = useMemo(() =>
-    {
-        return usedDates.filter(date => date.id !== id);
-    }, [usedDates, id]);
-
-    const getChangedProperties = useCallback((workplace: IWorkplace): Partial<IWorkplace> =>
-    {
-        let obj: any = {};
-
-        if (workplace && Object.keys(workplace).length && initialData.current)
-        {
-            for (const key in workplace)
-            {
-                const keyProp = key as keyof IWorkplace;
-                if (!isEqual(workplace[keyProp], initialData.current[keyProp]))
-                {
-                    obj[keyProp] = workplace[keyProp];
-                }
-            }
-        }
-        return obj;
-    }, []);
-
     const handleChangeInput = useCallback((e: React.ChangeEvent<HTMLInputElement>): void =>
     {
         const {value, name} = e.target;
-
         setWorkplace(prevWorkplace =>
         {
             return {
@@ -128,8 +104,24 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         {
             if (id)
             {
-                const changedObj: Partial<IWorkplace> = getChangedProperties(workplace as IWorkplace);
+                const getChangedProperties = (workplace: IWorkplace): Partial<IWorkplace> =>
+                {
+                    let obj: any = {};
 
+                    if (workplace && Object.keys(workplace).length && initialData.current)
+                    {
+                        for (const key in workplace)
+                        {
+                            const keyProp = key as keyof IWorkplace;
+                            if (!isEqual(workplace[keyProp], initialData.current[keyProp]))
+                            {
+                                obj[keyProp] = workplace[keyProp];
+                            }
+                        }
+                    }
+                    return obj;
+                };
+                const changedObj: Partial<IWorkplace> = getChangedProperties(workplace as IWorkplace);
                 (async () =>
                 {
                     try
@@ -213,7 +205,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                                 </label>
                                 <Calendar
                                     range={true}
-                                    disabledRangeDates={disabledDates}
+                                    disabledRangeDates={usedDates.filter(date => date.id !== id)}
                                     className={"inputStyle"}
                                     htmlForName={"rangePicker"}
                                     start={startDate ? new Date(startDate) : null}
@@ -233,18 +225,16 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
                     >
                         Cancel
                     </Button>
-                    {
-                        company.trim() && country && startDate ? (
-                            <Button
-                                disabled={isEqual(initialData.current, workplace)}
-                                processing={processingSave}
-                                style={{minWidth: 85, marginLeft: 10}}
-                                onClick={handleSave}
-                            >
-                                Save
-                            </Button>
-                        ) : null
-                    }
+                    {company.trim() && country && startDate ? (
+                        <Button
+                            disabled={isEqual(initialData.current, workplace)}
+                            processing={processingSave}
+                            style={{minWidth: 85, marginLeft: 10}}
+                            onClick={handleSave}
+                        >
+                            Save
+                        </Button>
+                    ) : null}
                 </footer>
             </div>
         </ErrorBoundary>

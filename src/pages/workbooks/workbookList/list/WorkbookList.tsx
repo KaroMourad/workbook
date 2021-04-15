@@ -11,7 +11,7 @@ import {useHistory, useLocation} from "react-router-dom";
 import {IWorkbook} from "../../IWorkBooks";
 import Modal from "../../../../components/modal/Modal";
 import WorkbookCreateEdit from "../create-edit/WorkbookCreateEdit";
-import DataTable from "react-data-table-component";
+import DataTable, {IDataTableColumn} from "react-data-table-component";
 import {UserContext} from "../../../../context/userContext/UserProvider";
 
 const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.Element =>
@@ -27,15 +27,6 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
     const [selectedWorkbookIds, setSelectedWorkbookIds] = useState<string[]>([]);
     const [openCreateEditModal, setOpenCreateEditModal] = useState<"create" | "edit" | false>(false);
     const [toggledClearRows, setToggledClearRows] = useState<boolean>(false);
-
-
-    const handleViewWorkBook = (id?: string): void =>
-    {
-        if (id)
-        {
-            history.push(`${location.pathname}/${id}`);
-        }
-    };
 
     // memoization hooks
 
@@ -82,7 +73,7 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
         selectedRows: IWorkbook[];
     }) =>
     {
-        setSelectedWorkbookIds(prevState => state.selectedRows.map(item => item.id as any));
+        setSelectedWorkbookIds(prevState => state.selectedRows.map(item => item.id as string));
     }, []);
 
     const handleDeleteWorkBook = useCallback((ids: string[]): void =>
@@ -106,11 +97,26 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
         })(ids);
     }, [getData, token, handleClearRows]);
 
-    const columns = useMemo(() => [
+    // small function doesn't need memoization
+    const handleRowClick = (row: IWorkbook): void =>
+    {
+        if (row.id)
+        {
+            history.push(`${location.pathname}/${row.id}`);
+        }
+    };
+
+    const columns = useMemo((): IDataTableColumn<IWorkbook>[] => [
         {
             name: "Created",
             selector: "created_at",
-            format: (row: any) => new Date(row.created_at).toDateString(),
+            format: (row: IWorkbook) =>
+            {
+                let date: Date = new Date(row.created_at as number);
+                let hours: string = ("0" + date.getHours()).slice(-2);
+                let seconds: string = ("0" + date.getSeconds()).slice(-2);
+                return date.toLocaleDateString() + ` ${hours}:${seconds}`;
+            },
             sortable: true
         },
         {
@@ -132,7 +138,7 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
         {
             name: "Birthdate",
             selector: "birthdate",
-            format: (row: any) => new Date(row.birthdate).toDateString(),
+            format: (row: IWorkbook) => new Date(row.birthdate).toLocaleDateString(),
         }
     ], []);
 
@@ -174,12 +180,6 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
                                     </>
                                 ) : null
                             }
-                            <Button
-                                disabled={selectedWorkbookIds.length !== 1 || deleteProcessing}
-                                style={{backgroundColor: "#6271ba", marginLeft: 10}}
-                                onClick={(e) => handleViewWorkBook(selectedWorkbookIds[0])}>
-                                View
-                            </Button>
                         </header>
                         <Modal
                             isOpen={token && !!openCreateEditModal}
@@ -199,6 +199,7 @@ const WorkbookList: FC<IWorkbookListProps> = (props: IWorkbookListProps): JSX.El
                                 columns={columns}
                                 data={workbooks}
                                 striped
+                                onRowClicked={handleRowClick}
                                 pagination
                                 style={{height: "100%", overflowY: "auto"}}
                                 selectableRowsHighlight
