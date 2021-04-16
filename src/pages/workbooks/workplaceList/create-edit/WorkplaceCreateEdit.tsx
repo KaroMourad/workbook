@@ -52,7 +52,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         {
             return {
                 ...prevWorkplace,
-                startDate: date?.valueOf() || null
+                startDate: date?.valueOf() ?? null
             } as IWorkplace;
         });
     }, []);
@@ -63,7 +63,7 @@ const WorkplaceCreateEdit: FC<IWorkplaceCreateEditProps> = ({
         {
             return {
                 ...prevWorkplace,
-                endDate: date?.valueOf() || null
+                endDate: date?.valueOf() ?? null
             } as IWorkplace;
         });
     }, []);

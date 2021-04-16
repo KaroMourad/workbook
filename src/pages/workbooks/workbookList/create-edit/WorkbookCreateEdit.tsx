@@ -68,7 +68,7 @@ const WorkbookCreateEdit: FC<IWorkbookCreateEditProps> = ({
             {
                 return {
                     ...prevWorkbook,
-                    birthdate: date?.valueOf() || Date.now
+                    birthdate: date?.valueOf() ?? Date.now()
                 } as IWorkbook;
             });
         }
